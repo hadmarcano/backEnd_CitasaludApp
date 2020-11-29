@@ -7,64 +7,73 @@ const Specialist = require("../models/specialist");
 
 // Middlewares ...
 
-exports.specialistSignup = (req, res) => {
-  const specialist = new Specialist(req.body);
-  
-}
 
-exports.signup = (req, res) => {
+exports.userSignup = (req, res) => {
   const user = new User(req.body);
+  user.salt;
+  user.hashed_password;
   
-  //console.log(user);
   user.save((err, user) => {
     if (err) {
       return res.status(400).json({
-        error: errorHandler(err),
+        error: err,
       });
     }
-    user.salt = undefined;
-    user.hashed_password = undefined;
-    res.json({ user });
+    
+    res.json({user});
   });
 };
 
-exports.signin = (req, res) => {
+exports.userSignin = async (req, res) => {
   const { email, password } = req.body;
-  User.findOne({ email }, (err, user) => {
+  
+  const user = await User.findOne({ email }, async (err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        error: "User with that email does not exist. Please signup",
-      });
+        error: "User with that email does not exist. Please signup"
+      })
     }
-
-    // If user dont be authenticated
-    if (!user.authenticated(password)) {
-      return res.status(401).json({
-        error: "Email and password dont match",
+    
+    // Verifying if user is authenticated ...
+    
+    try {
+      const isAuthenticated = await user.authenticated(password);
+      
+      if(!isAuthenticated){
+        return res.status(400).json({error: 'Not authenticated'});
+      }
+      
+      // generate auth token ...
+      const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET);
+      
+      // holding the token as 't' in cookie with the expires date ...
+      
+      res.cookie('t', token, {
+        expires: new Date(Date.now() + 900000),
+        httpOnly: true
       });
+      
+      const { _id, firstName, lastName, email, role } = user;
+      
+      return res.status(202).json({
+        token,
+        user: {
+          _id,
+          firstName,
+          lastName,
+          email,
+          role
+        }
+      });
+      
+    }catch(e){
+      res.status(401).json({
+        'error': 'Unable to login'
+      })
     }
-
-    // Generate a token with user id and secret ...
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
-
-    // Hold the token as 't' in cookie with expires date ...
-    res.cookie("t", token, {
-      expires: new Date(Date.now() + 900000),
-      httpOnly: true,
-    });
-
-    // Return response with user and token to client frontend ...
-    const { _id, name, email, role } = user;
-    return json({
-      token,
-      user: {
-        _id,
-        firstName,
-        lastName,
-        role,
-      },
-    });
+    
   });
+  
 };
 
 exports.signout = (req, res) => {
@@ -95,4 +104,9 @@ exports.isAdmin = (req, res, next) => {
     });
   }
   next();
+};
+
+exports.specialistSignup = (req, res) => {
+  const specialist = new Specialist(req.body);
+  
 };

@@ -1,11 +1,12 @@
 const mongoose = require("mongoose");
 const { Schema, model, ObjectId } = mongoose;
 const bcrypt = require("bcryptjs");
+const jwt = require('jsonwebtoken');
 //const uuidv1 = require("uuid/v1");
 
 // Appointment Schema ...
 
-const AppoinmentSchema = new Schema(
+const AppointmentSchema = new Schema(
   {
     specialist: { type: ObjectId, ref: "Specialist" },
     user: { type: ObjectId, ref: "User" },
@@ -19,7 +20,7 @@ const AppoinmentSchema = new Schema(
   { timestamps: true }
 );
 
-const Appointment = model("Appointment", AppoinmentSchema);
+const Appointment = model("Appointment", AppointmentSchema);
 
 // User Schema
 
@@ -44,7 +45,7 @@ const userSchema = new Schema(
       lowercase: true,
       unique: true,
     },
-    hashed_password: {
+    password : {
       type: String,
       trim: true,
       minlength: 7,
@@ -92,10 +93,6 @@ const userSchema = new Schema(
       required: true,
       maxlength: 60,
     },
-    photo: {
-      data: Buffer,
-      contentType: String,
-    },
     insuranceCompany: {
       type: String,
       trim: true,
@@ -105,51 +102,43 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    appoinments: [AppoinmentSchema],
+    appointments: [AppointmentSchema]
   },
   { timestamps: true }
 );
 
-const User = model("User", userSchema);
 
-// Control virtual fields
+// hashing the password before saving ...
 
-userSchema
-  .virtual("password")
-  .set(function (password) {
-    this._password = password;
-    // const saltRounds = 10;
-    // this.salt = bcrypt.genSalt(saltRounds);
-    // this.hashed_password = this.encryptPassword(password);
-    try{
-        if(user.isModified('password')){
-            const saltRounds = 10;
-            this.salt = bcrypt.genSalt(saltRounds);
-            user.hashed_password = this.encryptPassword(password);
-        }
-    }catch(e){
-        console.log(e);
+userSchema.pre('save', async function(next){
+  const user = this;
+  const saltRounds = 10;
+  try{
+    if(user.isModified('password')) {
+      user.salt = await bcrypt.genSalt(saltRounds);
+      user.password = await bcrypt.hash(user.password, user.salt);
     }
-  })
-  .get(function () {
-    return this._password;
-  });
+  }catch(e){
+    console.log(e);
+  }
+  next();
+});
 
 // userSchema Methods
 
 userSchema.methods = {
-  authenticated: function (plainText) {
-    return this.encryptPassword(plainText) === this.hashed_password;
+  authenticated: async function (plainText) {
+    return await bcrypt.compare(plainText, this.password);
   },
 
-  encryptPassword: async function (password) {
-    if (!password) return "";
-    try {
-      return  await bcrypt.hash(this.password, this.salt);
-    } catch (err) {
-      return "";
-    }
-  },
+  generateAuthToken : async function() {
+    const user = this;
+    const token = jwt.sign({ _id: user._id.toString()}, process.env.JWT_SECRET);
+    return token;
+  }
 };
+
+
+const User = model("User", userSchema);
 
 module.exports = { User, Appointment };

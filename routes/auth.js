@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Middlewares from auth controllers ...
 
-const { signup, signin, signout } = require("../controllers/auth");
+const { userSignup, userSignin, signout } = require("../controllers/auth");
 
 // Middlewares from validator ...
 
@@ -11,9 +11,9 @@ const { userSignupValidator } = require("../validator/index");
 
 // Routes ...
 
-router.post("/signup", userSignupValidator, signup);
+router.post("/users/signup", userSignupValidator, userSignup);
 
-router.post("/signin", signin);
+router.post("/users/signin", userSignin);
 
 router.get("/signout", signout);
 
