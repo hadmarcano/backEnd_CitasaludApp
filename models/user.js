@@ -102,6 +102,10 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
+    history: {
+      type: Array,
+      default: []
+    },
     appointments: [AppointmentSchema]
   },
   { timestamps: true }

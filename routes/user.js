@@ -1,10 +1,34 @@
 const express = require('express');
 const router = express.Router();
 
+// Controllers ...
+
 const {
     requireSignin,
     isAuth,
     isAdmin
 } = require('../controllers/auth');
 
-// user controllers ...
+const {
+    userById,
+    read,
+    update,
+    getMedicalHistory
+} = require('../controllers/user');
+
+// User Routes ...
+
+router.get('/users/:userId', requireSignin, isAuth, read);
+
+router.patch('/users/:userId', requireSignin, isAuth, update);
+
+router.get('/history/by/user/:userId', requireSignin, isAuth, isAdmin, getMedicalHistory);
+
+
+
+// Params ...
+
+router.param('userId', userById);
+
+module.exports = router;
+
