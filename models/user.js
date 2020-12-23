@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const { Schema, model, ObjectId } = mongoose;
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
-//const uuidv1 = require("uuid/v1");
 
 // Appointment Schema ...
 
@@ -137,7 +136,10 @@ userSchema.methods = {
 
   generateAuthToken : async function() {
     const user = this;
-    const token = jwt.sign({ _id: user._id.toString()}, process.env.JWT_SECRET);
+    const token = jwt.sign(
+      { _id: user._id.toString()},
+      process.env.JWT_SECRET
+    );
     return token;
   }
 };

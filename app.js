@@ -10,8 +10,8 @@ const db = require('./db/mongoose');
 
 // Import Routes
 const authRoutes = require('./routes/auth');
-//const userRoutes = require('./routes/user');
-//const specialityRoutes = require('./routes/speciality');
+const userRoutes = require('./routes/user');
+//const specialistRoutes = require('./routes/specialist');
 
 // App-express
 
@@ -34,7 +34,8 @@ app.use(cors());
 // Routes Middlewares
 
 app.use('/api', authRoutes);
-//app.use('api', userRoutes);
+app.use('/api', userRoutes);
+//app.use('/api', specialistRoutes);
 
 // PORT
 

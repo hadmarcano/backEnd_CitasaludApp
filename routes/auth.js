@@ -3,18 +3,30 @@ const router = express.Router();
 
 // Middlewares from auth controllers ...
 
-const { userSignup, userSignin, signout } = require("../controllers/auth");
+const { 
+    specialistSignup,
+    specialistSignin,
+    userSignup,
+    userSignin,
+    signout
+} = require("../controllers/auth");
 
 // Middlewares from validator ...
 
-const { userSignupValidator } = require("../validator/index");
+const { signupValidator } = require("../validator/index");
 
 // Routes ...
 
-router.post("/users/signup", userSignupValidator, userSignup);
+router.post('/specialist/signup', signupValidator, specialistSignup);
+
+router.post('/specialist/signin', specialistSignin);
+
+router.post('/specialist/signout', signout);
+
+router.post("/users/signup", signupValidator, userSignup);
 
 router.post("/users/signin", userSignin);
 
-router.get("/signout", signout);
+router.get("/users/signout", signout);
 
 module.exports = router;

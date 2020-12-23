@@ -11,18 +11,19 @@ const {
 
 const {
     userById,
-    read,
     update,
-    getMedicalHistory
+    read,
+    // getMedicalHistory
 } = require('../controllers/user');
 
 // User Routes ...
 
 router.get('/users/:userId', requireSignin, isAuth, read);
 
+//router.get('/history/by/user/:userId', requireSignin, isAuth, isAdmin, getMedicalHistory);
+
 router.patch('/users/:userId', requireSignin, isAuth, update);
 
-router.get('/history/by/user/:userId', requireSignin, isAuth, isAdmin, getMedicalHistory);
 
 
 

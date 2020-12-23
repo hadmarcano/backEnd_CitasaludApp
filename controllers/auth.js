@@ -1,60 +1,53 @@
 const { User } = require("../models/user");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
-const { errorHandler } = require("../helpers/dbErrorHandler");
-const { json } = require("body-parser");
 const Specialist = require("../models/specialist");
 
 // Middlewares ...
 
-
 exports.userSignup = (req, res) => {
   const user = new User(req.body);
-  user.salt;
-  user.hashed_password;
-  
   user.save((err, user) => {
     if (err) {
       return res.status(400).json({
         error: err,
       });
     }
-    
-    res.json({user});
+    user.password = undefined;
+    user.salt = undefined;
+    res.json({ user });
   });
 };
 
 exports.userSignin = async (req, res) => {
   const { email, password } = req.body;
-  
+
   const user = await User.findOne({ email }, async (err, user) => {
     if (err || !user) {
       return res.status(400).json({
-        error: "User with that email does not exist. Please signup"
-      })
+        error: "User with that email does not exist. Please signup",
+      });
     }
-    
+
     // Verifying if user is authenticated ...
-    
     try {
       const isAuthenticated = await user.authenticated(password);
-      
-      if(!isAuthenticated){
-        return res.status(400).json({error: 'Not authenticated'});
+
+      if (!isAuthenticated) {
+        return res.status(400).json({ error: "Not authenticated" });
       }
-      
+
       // generate auth token ...
-      const token = jwt.sign({_id: user._id}, process.env.JWT_SECRET);
-      
+      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
+
       // holding the token as 't' in cookie with the expires date ...
-      
-      res.cookie('t', token, {
+      res.cookie("t", token, {
         expires: new Date(Date.now() + 900000),
-        httpOnly: true
+        httpOnly: true,
       });
-      
+
       const { _id, firstName, lastName, email, role } = user;
-      
+
       return res.status(202).json({
         token,
         user: {
@@ -62,18 +55,15 @@ exports.userSignin = async (req, res) => {
           firstName,
           lastName,
           email,
-          role
-        }
+          role,
+        },
       });
-      
-    }catch(e){
+    } catch (e) {
       res.status(401).json({
-        'error': 'Unable to login'
-      })
+        error: "Unable to login",
+      });
     }
-    
   });
-  
 };
 
 exports.signout = (req, res) => {
@@ -81,10 +71,11 @@ exports.signout = (req, res) => {
   res.json({ message: "Signout success" });
 };
 
+// Recuperar el usuario/specialista decodificado ...
 exports.requireSignin = expressJwt({
   secret: process.env.JWT_SECRET,
   userProperty: "auth",
-  algorithms: ["RS256"],
+  algorithms: ["HS256"],
 });
 
 exports.isAuth = (req, res, next) => {
@@ -108,5 +99,53 @@ exports.isAdmin = (req, res, next) => {
 
 exports.specialistSignup = (req, res) => {
   const specialist = new Specialist(req.body);
-  
+  specialist.save((err, spec) => {
+    if (err || !spec) {
+      return res.status(400).json({ Error: err });
+    }
+    spec.password = undefined;
+    spec.salt = undefined;
+    res.json(spec);
+  });
+};
+
+exports.specialistSignin = async (req, res) => {
+  const { email, password } = req.body;
+
+  const specialist = await Specialist.findOne({ email }, async (err, spec) => {
+    if (err || !spec) {
+      return res.status(400).json({ Error: "Specialist dont exist" });
+    }
+
+    try {
+      const isAuthenticated = await spec.specAuthenticated(password);
+
+      if (!isAuthenticated) {
+        return res.status(401).json({ Error: "Specialist not authenticated" });
+      }
+
+      const token = jwt.sign({ _id: spec._id }, process.env.JWT_SECRET);
+
+      res.cookie("t", token, {
+        expires: new Date(Date.now() + 900000),
+        httpOnly: true,
+      });
+
+      const { _id, firstName, lastName, speciality, email, role } = spec;
+
+      return res.status(202).json({
+        token,
+        specialist: {
+          _id,
+          firstName,
+          lastName,
+          speciality,
+          email,
+          role,
+        },
+      });
+    } catch (e) {
+      console.log("Error: ", e);
+    }
+  });
 };
