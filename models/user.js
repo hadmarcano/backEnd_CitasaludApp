@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema, model, ObjectId } = mongoose;
 const bcrypt = require("bcryptjs");
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 // Appointment Schema ...
 
@@ -44,7 +44,7 @@ const userSchema = new Schema(
       lowercase: true,
       unique: true,
     },
-    password : {
+    password: {
       type: String,
       trim: true,
       minlength: 7,
@@ -78,11 +78,6 @@ const userSchema = new Schema(
       trim: true,
       lowercase: true,
     },
-    bloodType: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
     phone: {
       type: Number,
       required: true,
@@ -92,36 +87,26 @@ const userSchema = new Schema(
       required: true,
       maxlength: 60,
     },
-    insuranceCompany: {
-      type: String,
-      trim: true,
-      lowercase: true,
-    },
-    policyNumber: {
-      type: Number,
-      default: 0,
-    },
     history: {
       type: Array,
-      default: []
+      default: [],
     },
-    appointments: [AppointmentSchema]
+    appointments: [AppointmentSchema],
   },
   { timestamps: true }
 );
 
-
 // hashing the password before saving ...
 
-userSchema.pre('save', async function(next){
+userSchema.pre("save", async function (next) {
   const user = this;
   const saltRounds = 10;
-  try{
-    if(user.isModified('password')) {
+  try {
+    if (user.isModified("password")) {
       user.salt = await bcrypt.genSalt(saltRounds);
       user.password = await bcrypt.hash(user.password, user.salt);
     }
-  }catch(e){
+  } catch (e) {
     console.log(e);
   }
   next();
@@ -134,16 +119,15 @@ userSchema.methods = {
     return await bcrypt.compare(plainText, this.password);
   },
 
-  generateAuthToken : async function() {
+  generateAuthToken: async function () {
     const user = this;
     const token = jwt.sign(
-      { _id: user._id.toString()},
+      { _id: user._id.toString() },
       process.env.JWT_SECRET
     );
     return token;
-  }
+  },
 };
-
 
 const User = model("User", userSchema);
 
