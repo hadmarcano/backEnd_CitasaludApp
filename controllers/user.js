@@ -1,4 +1,4 @@
-const { User } = require("../models/user");
+const User = require("../models/user");
 
 //User Middlewares ...
 
@@ -7,19 +7,41 @@ const { User } = require("../models/user");
 exports.userById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
-      return res.status(400).json({
+      return res.status(404).json({
         error: "User not found",
       });
     }
     req.profile = user;
     next();
   });
-  v;
 };
 
 // update
 
 exports.update = (req, res) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = [
+    "firstName",
+    "lastName",
+    "email",
+    "rut",
+    "phone",
+    "address",
+    "civilState",
+    "sexType",
+    "birthDate",
+  ];
+
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).json({
+      error: "Unable to update any this fields",
+    });
+  }
+
   User.findOneAndUpdate(
     { _id: req.profile._id },
     { $set: req.body },
