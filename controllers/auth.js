@@ -1,4 +1,4 @@
-const { User } = require("../models/user");
+const User = require("../models/user");
 const jwt = require("jsonwebtoken");
 const expressJwt = require("express-jwt");
 const Specialist = require("../models/specialist");
@@ -131,7 +131,15 @@ exports.specialistSignin = async (req, res) => {
         httpOnly: true,
       });
 
-      const { _id, firstName, lastName, speciality, email, role } = spec;
+      const {
+        _id,
+        firstName,
+        lastName,
+        speciality,
+        specialization,
+        email,
+        role,
+      } = spec;
 
       return res.status(202).json({
         token,
@@ -140,6 +148,7 @@ exports.specialistSignin = async (req, res) => {
           firstName,
           lastName,
           speciality,
+          specialization,
           email,
           role,
         },

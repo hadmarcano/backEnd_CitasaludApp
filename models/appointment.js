@@ -3,20 +3,17 @@ const { Schema, model, ObjectId } = mongoose;
 
 // Appointment Schema
 
-const AppoinmentSchema = new Schema(
+const AppointmentSchema = new Schema(
   {
     specialist: { type: ObjectId, ref: "specialist" },
     user: { type: ObjectId, ref: "User" },
-    firstName: String,
-    lastName: String,
-
-    date: Date,
-    hourIn: Number,
-    hourOut: Number,
+    date: String,
+    hourIn: String,
+    hourOut: String,
   },
   { timestamps: true }
 );
 
-const Appointment = model("Appointment", AppoinmentSchema);
+const Appointment = model("Appointment", AppointmentSchema);
 
 module.exports = Appointment;
