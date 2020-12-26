@@ -2,25 +2,6 @@ const mongoose = require("mongoose");
 const { Schema, model, ObjectId } = mongoose;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const AppointmentSchema = require("./appointment");
-
-// Appointment Schema ...
-
-// const AppointmentSchema = new Schema(
-//   {
-//     specialist: { type: ObjectId, ref: "Specialist" },
-//     user: { type: ObjectId, ref: "User" },
-//     firstName: String,
-//     lastName: String,
-
-//     date: Date,
-//     hourIn: Number,
-//     hourOut: Number,
-//   },
-//   { timestamps: true }
-// );
-
-//const Appointment = model("Appointment", AppointmentSchema);
 
 // User Schema
 
@@ -88,11 +69,6 @@ const userSchema = new Schema(
       required: true,
       maxlength: 60,
     },
-    history: {
-      type: Array,
-      default: [],
-    },
-    appointments: [AppointmentSchema],
   },
   { timestamps: true }
 );

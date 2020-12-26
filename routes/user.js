@@ -5,12 +5,7 @@ const router = express.Router();
 
 const { requireSignin, isAuth, isAdmin } = require("../controllers/auth");
 
-const {
-  userById,
-  update,
-  read,
-  // getMedicalHistory
-} = require("../controllers/user");
+const { userById, update, read } = require("../controllers/user");
 
 // User Routes ...
 
