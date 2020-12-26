@@ -5,17 +5,23 @@ const router = express.Router();
 const { userById } = require("../controllers/user");
 const { specialistById } = require("../controllers/specialist");
 const { requireSignin, isAuth } = require("../controllers/auth");
-const { isValidReserve, createReserve } = require("../controllers/appointment");
+const {
+  isValidReserve,
+  createReserve,
+  listReserves,
+} = require("../controllers/appointment");
 
 // Appointment routes ...
 
 router.post(
-  "/users/reserve/:userId/:specById",
+  "/users/reserve/:userId",
   requireSignin,
   isAuth,
   isValidReserve,
   createReserve
 );
+
+router.get("/users/allreserves/:userId", requireSignin, isAuth, listReserves);
 
 // Params ...
 

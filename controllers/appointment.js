@@ -1,4 +1,5 @@
 const Appointment = require("../models/appointment");
+const Specialist = require("../models/specialist");
 
 //  ++++++ MIDDLEWARES ++++++
 
@@ -63,5 +64,20 @@ exports.createReserve = async (req, res) => {
       reserve,
       message: "Your reserve has been save succesfuly!",
     });
+  });
+};
+
+exports.listReserves = async (req, res) => {
+  Appointment.find({ user: req.profile._id }, function (err, reserves) {
+    Specialist.populate(
+      reserves,
+      {
+        path: "specialist",
+        select: "firstName lastName speciality specialization",
+      },
+      function (err, reserves) {
+        res.status(200).json(reserves);
+      }
+    );
   });
 };
