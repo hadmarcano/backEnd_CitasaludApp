@@ -76,7 +76,12 @@ exports.listReserves = async (req, res) => {
         select: "firstName lastName speciality specialization",
       },
       function (err, reserves) {
-        res.status(200).json(reserves);
+        if (err || !reserves) {
+          return res.status(500).json({
+            error: err,
+          });
+        }
+        return res.status(200).json(reserves);
       }
     );
   });
