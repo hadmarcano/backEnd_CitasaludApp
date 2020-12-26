@@ -173,3 +173,17 @@ exports.readReserve = (req, res) => {
     );
   });
 };
+
+exports.deleteReserve = (req, res) => {
+  Appointment.findByIdAndDelete({ _id: req.reserve._id }).exec(
+    (err, reserve) => {
+      if (err || !reserve) {
+        res.status(404).json({ error: "Unable to delete this reserve" });
+      }
+      res.status(200).json({
+        reserve,
+        message: "Reserve has been deleted successfully",
+      });
+    }
+  );
+};

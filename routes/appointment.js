@@ -12,6 +12,7 @@ const {
   listReserves,
   readReserve,
   updateReserve,
+  deleteReserve,
 } = require("../controllers/appointment");
 
 // Appointment routes ...
@@ -30,7 +31,8 @@ router.get(
   "/users/reserve/:userId/:reserveId",
   requireSignin,
   isAuth,
-  readReserve
+  readReserve,
+  deleteReserve
 );
 
 router.patch(
@@ -38,6 +40,13 @@ router.patch(
   requireSignin,
   isAuth,
   updateReserve
+);
+
+router.delete(
+  "/users/reserve/:userId/:reserveId",
+  requireSignin,
+  isAuth,
+  deleteReserve
 );
 
 // Params ...
