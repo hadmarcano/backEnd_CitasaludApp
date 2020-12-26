@@ -131,7 +131,15 @@ exports.specialistSignin = async (req, res) => {
         httpOnly: true,
       });
 
-      const { _id, firstName, lastName, speciality, email, role } = spec;
+      const {
+        _id,
+        firstName,
+        lastName,
+        speciality,
+        specialization,
+        email,
+        role,
+      } = spec;
 
       return res.status(202).json({
         token,
@@ -140,6 +148,7 @@ exports.specialistSignin = async (req, res) => {
           firstName,
           lastName,
           speciality,
+          specialization,
           email,
           role,
         },

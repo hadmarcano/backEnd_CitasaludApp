@@ -12,6 +12,7 @@ const db = require("./db/mongoose");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const reserveRoutes = require("./routes/appointment");
+const specialistRouter = require("./routes/specialist");
 
 // App-express
 
@@ -35,6 +36,7 @@ app.use(cors());
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", reserveRoutes);
+app.use("/api", specialistRouter);
 
 // PORT
 

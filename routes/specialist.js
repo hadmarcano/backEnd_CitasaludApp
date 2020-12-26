@@ -1,33 +1,36 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
 // Controllers ...
 
-const {
-    isAuth,
-    isAdmin,
-    requireSignin
-} = require('../controllers/auth');
+const { isAuth, isAdmin, requireSignin } = require("../controllers/auth");
 
 const {
-    specialistById,
-    updateSpecialist,
-    readSpecialist,
-    
-
-    
-} = require('../controllers/specialist');
-
+  specialistById,
+  getProfile,
+  updateProfile,
+} = require("../controllers/specialist");
 
 // Routes ...
 
-router.patch('/specialist/:specialistId', requireSignin, isAuth, updateSpecialist);
+router.get(
+  "/specialist/:specialistId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  getProfile
+);
 
+router.patch(
+  "/specialist/:specialistId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  updateProfile
+);
 
 // Params
 
-router.param('specialistById', specialistById);
+router.param("specialistId", specialistById);
 
 module.exports = router;
-
-
