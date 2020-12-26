@@ -9,6 +9,7 @@ const {
   specialistById,
   getProfile,
   updateProfile,
+  listReserves,
 } = require("../controllers/specialist");
 
 // Routes ...
@@ -27,6 +28,14 @@ router.patch(
   isAuth,
   isAdmin,
   updateProfile
+);
+
+router.get(
+  "/specialist/reserves/:specialistId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  listReserves
 );
 
 // Params

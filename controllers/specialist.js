@@ -1,5 +1,6 @@
 const Specialist = require("../models/specialist");
 const Appointment = require("../models/appointment");
+const User = require("../models/user");
 
 //Specialist Middlewares ...
 
@@ -69,4 +70,33 @@ exports.updateProfile = (req, res) => {
       });
     }
   );
+};
+
+exports.listReserves = (req, res) => {
+  Appointment.find({ specialist: req.profile._id }, function (err, reserves) {
+    if (err || !reserves) {
+      res.status(400).json({
+        error: err,
+      });
+    }
+    User.populate(
+      reserves,
+      { path: "user", select: "firstName lastName rut" },
+      function (err, reserves) {
+        if (err || !reserves) {
+          return res.status(400).json({
+            error: err,
+          });
+        }
+
+        if (reserves.length === 0) {
+          return res.status(200).json({
+            reserves,
+            message: "You don't have reserves",
+          });
+        }
+        res.status(200).json(reserves);
+      }
+    );
+  });
 };
