@@ -7,7 +7,6 @@ const AppointmentSchema = new Schema(
   {
     specialist: { type: ObjectId, ref: "specialist" },
     user: { type: ObjectId, ref: "User" },
-    day: String,
     date: String,
     hourIn: String,
     hourOut: String,

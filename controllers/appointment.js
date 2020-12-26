@@ -3,10 +3,26 @@ const Specialist = require("../models/specialist");
 
 //  ++++++ MIDDLEWARES ++++++
 
+// Reserve by id ...
+
+exports.reserveById = (req, res, next, id) => {
+  Appointment.findById(id).exec((err, reserve) => {
+    if (err || !reserve) {
+      res.status(404).json({
+        error: "reserve not found",
+      });
+    }
+    req.reserve = reserve;
+    next();
+  });
+};
+
 // Validate reserve...
 
 exports.isValidReserve = async (req, res, next) => {
   const { day, date, hourIn, hourOut } = req.body;
+
+  console.log(req.specialist);
 
   const reserveData = {
     specialist: req.specialist._id,
@@ -67,7 +83,9 @@ exports.createReserve = async (req, res) => {
   });
 };
 
-exports.listReserves = async (req, res) => {
+// List reserves ...
+
+exports.listReserves = (req, res) => {
   Appointment.find({ user: req.profile._id }, function (err, reserves) {
     Specialist.populate(
       reserves,
@@ -86,3 +104,38 @@ exports.listReserves = async (req, res) => {
     );
   });
 };
+
+// Update reserve...
+
+exports.updateReserve = (req, res, next) => {
+  const updates = Object.keys(req.body);
+  const allowedUpdates = ["date", "hourIn", "hourOut"];
+  const isValidOperation = updates.every((update) =>
+    allowedUpdates.includes(update)
+  );
+
+  if (!isValidOperation) {
+    return res.status(400).json({
+      error: "Unable to update any this fields",
+    });
+  }
+
+  Appointment.findOneAndUpdate(
+    { _id: req.reserve._id },
+    { $set: req.body },
+    { new: true },
+    (err, reserve) => {
+      if (err) {
+        return res.status(400).json({
+          error: err,
+        });
+      }
+      res.status(200).json({
+        reserve,
+        message: "Your reserve has been updated!",
+      });
+    }
+  );
+};
+
+// Read reserve ...
