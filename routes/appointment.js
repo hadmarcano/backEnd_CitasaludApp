@@ -10,6 +10,7 @@ const {
   isValidReserve,
   createReserve,
   listReserves,
+  readReserve,
   updateReserve,
 } = require("../controllers/appointment");
 
@@ -24,6 +25,13 @@ router.post(
 );
 
 router.get("/users/allreserves/:userId", requireSignin, isAuth, listReserves);
+
+router.get(
+  "/users/reserve/:userId/:reserveId",
+  requireSignin,
+  isAuth,
+  readReserve
+);
 
 router.patch(
   "/users/reserve/:userId/:reserveId",

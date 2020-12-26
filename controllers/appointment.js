@@ -139,3 +139,37 @@ exports.updateReserve = (req, res, next) => {
 };
 
 // Read reserve ...
+
+exports.readReserve = (req, res) => {
+  Appointment.find({ _id: req.reserve._id }, function (err, reserve) {
+    if (err || !reserve) {
+      res.status(404).json({
+        error: err,
+      });
+    }
+    Specialist.populate(
+      reserve,
+      {
+        path: "specialist",
+        select: "speciality specialization firstName lastName",
+      },
+      function (err, reserve) {
+        if (err) {
+          res.status(400).json({
+            error: err,
+          });
+        }
+        const patient = {
+          _id: req.profile._id,
+          firstName: req.profile.firstName,
+          lastName: req.profile.lastName,
+          rut: req.profile.rut,
+        };
+        res.status(200).json({
+          reserve,
+          patient,
+        });
+      }
+    );
+  });
+};
