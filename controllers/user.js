@@ -2,8 +2,7 @@ const User = require("../models/user");
 
 //User Middlewares ...
 
-// userById
-
+// userById...
 exports.userById = (req, res, next, id) => {
   User.findById(id).exec((err, user) => {
     if (err || !user) {
@@ -16,8 +15,7 @@ exports.userById = (req, res, next, id) => {
   });
 };
 
-// update
-
+// update ...
 exports.update = (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = [
@@ -59,8 +57,7 @@ exports.update = (req, res) => {
   );
 };
 
-// read
-
+// read ...
 exports.read = (req, res) => {
   User.findOne({ _id: req.profile._id }).exec((err, user) => {
     if (err || !user) {
@@ -74,7 +71,3 @@ exports.read = (req, res) => {
     res.status(200).json(user);
   });
 };
-
-// addSummaryToMedicalHistory
-
-// getMedicalHistory

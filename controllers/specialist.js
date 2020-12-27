@@ -4,6 +4,7 @@ const User = require("../models/user");
 
 //Specialist Middlewares ...
 
+// Specialist by id ...
 exports.specialistById = (req, res, next, id) => {
   Specialist.findById(id).exec((err, spec) => {
     if (err || !spec) {
@@ -16,6 +17,7 @@ exports.specialistById = (req, res, next, id) => {
   });
 };
 
+// Get specialist profile ...
 exports.getProfile = (req, res) => {
   Specialist.findById({ _id: req.profile._id }).exec((err, specialist) => {
     if (err || !specialist) {
@@ -27,6 +29,7 @@ exports.getProfile = (req, res) => {
   });
 };
 
+// Update specialist profile ...
 exports.updateProfile = (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = [
@@ -72,6 +75,7 @@ exports.updateProfile = (req, res) => {
   );
 };
 
+// List reserves by specialistId
 exports.listReserves = (req, res) => {
   Appointment.find({ specialist: req.profile._id }, function (err, reserves) {
     if (err || !reserves) {

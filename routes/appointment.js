@@ -31,8 +31,7 @@ router.get(
   "/users/reserve/:userId/:reserveId",
   requireSignin,
   isAuth,
-  readReserve,
-  deleteReserve
+  readReserve
 );
 
 router.patch(

@@ -6,6 +6,13 @@ const router = express.Router();
 const { isAuth, isAdmin, requireSignin } = require("../controllers/auth");
 
 const {
+  reserveById,
+  updateReserve,
+  readReserve,
+  deleteReserve,
+} = require("../controllers/appointment");
+
+const {
   specialistById,
   getProfile,
   updateProfile,
@@ -38,8 +45,33 @@ router.get(
   listReserves
 );
 
+router.patch(
+  "/specialist/reserve/:specialistId/:reserveId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  updateReserve
+);
+
+router.get(
+  "/specialist/reserve/:specialistId/:reserveId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  readReserve
+);
+
+router.delete(
+  "/specialist/reserve/:specialistId/:reserveId",
+  requireSignin,
+  isAuth,
+  isAdmin,
+  deleteReserve
+);
+
 // Params
 
 router.param("specialistId", specialistById);
+router.param("reserveId", reserveById);
 
 module.exports = router;
