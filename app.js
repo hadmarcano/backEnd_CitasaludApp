@@ -7,6 +7,8 @@ const cors = require("cors");
 const expressValidator = require("express-validator");
 require("dotenv").config();
 const db = require("./db/mongoose");
+const swaggerJsDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
 // Import Routes
 const authRoutes = require("./routes/auth");
@@ -24,12 +26,35 @@ db();
 
 // Middlewares
 
-//app.use(express.json());
 app.use(bodyParser.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(expressValidator());
 app.use(cors());
+
+// Extended: https://swagger.io/specification/#infoObject
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: "3.0.0",
+    info: {
+      version: "1.0.0",
+      title: "Health Appointment API",
+      description: "Health Appointment API Rest Server",
+      contact: {
+        name: "Héctor Díaz",
+        url: "https://www.linkedin.com/in/hector-adolfo-diaz-marcano-ab0a27aa/",
+      },
+      servers: ["http://localhost:5000"],
+    },
+  },
+  // definition the apis with swagger
+  apis: ["./routes/*.js"],
+};
+
+// Final definitions with swagger-express
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Routes Middlewares
 

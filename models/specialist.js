@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const { Schema, model } = mongoose;
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const bcrypt = require("bcryptjs");
+const jwt = require("jsonwebtoken");
 
 const specialistSchema = new Schema(
   {
@@ -10,43 +10,47 @@ const specialistSchema = new Schema(
     rut: Number,
     role: {
       type: Number,
-      default: 1
+      default: 1,
     },
     speciality: String,
     specialization: {
       type: String,
-      default: "N/A"
+      default: "N/A",
     },
     email: {
       type: String,
       unique: true,
       required: true,
       trim: true,
-      lowercase: true
+      lowercase: true,
     },
     password: {
       type: String,
       trim: true,
-      required: true
+      required: true,
     },
     salt: String,
     phone: Number,
-    Address: String
-  },{ timestamps: true}
+    Address: String,
+  },
+  { timestamps: true }
 );
 
 // hashing the password before saving ...
 
-specialistSchema.pre('save', async function (next) {
+specialistSchema.pre("save", async function (next) {
   const specialist = this;
   const saltRounds = 10;
-  try{
-    if(specialist.isModified('password')) {
+  try {
+    if (specialist.isModified("password")) {
       specialist.salt = await bcrypt.genSalt(saltRounds);
-      specialist.password = await bcrypt.hash(specialist.password, specialist.salt);
+      specialist.password = await bcrypt.hash(
+        specialist.password,
+        specialist.salt
+      );
     }
-  }catch(e){
-    console.log('Error: ', e);
+  } catch (e) {
+    console.log("Error: ", e);
   }
   next();
 });
@@ -56,21 +60,19 @@ specialistSchema.pre('save', async function (next) {
 specialistSchema.methods = {
   specAuthenticated: async function (plainText) {
     const specialist = this;
-    return await bcrypt.compare(plainText, this.password);
+    return await bcrypt.compare(plainText, specialist.password);
   },
 
-  generateAuthToken : async function() {
+  generateAuthToken: async function () {
     const specialist = this;
     const token = jwt.sign(
-      {_id: specialist._id.toString()},
-       process.env.JWT_SECRET
+      { _id: specialist._id.toString() },
+      process.env.JWT_SECRET
     );
 
     return token;
-
-  }
+  },
 };
-
 
 const Specialist = model("Specialist", specialistSchema);
 

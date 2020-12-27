@@ -1,10 +1,10 @@
 const Appointment = require("../models/appointment");
 const Specialist = require("../models/specialist");
+const User = require("../models/user");
 
-//  ++++++ MIDDLEWARES ++++++
+//Appointment Middlewares ...
 
 // Reserve by id ...
-
 exports.reserveById = (req, res, next, id) => {
   Appointment.findById(id).exec((err, reserve) => {
     if (err || !reserve) {
@@ -18,7 +18,6 @@ exports.reserveById = (req, res, next, id) => {
 };
 
 // Validate reserve...
-
 exports.isValidReserve = async (req, res, next) => {
   const { day, date, hourIn, hourOut } = req.body;
 
@@ -51,7 +50,7 @@ exports.isValidReserve = async (req, res, next) => {
 
     if (!canReserve) {
       return res.status(409).json({
-        conflict: "The time selected is reserved, try other time",
+        conflict: "The date and hour selected is reserved, try others hour",
       });
     }
     req.reserve = reserveData;
@@ -65,7 +64,6 @@ exports.isValidReserve = async (req, res, next) => {
 };
 
 // Create reserve ...
-
 exports.createReserve = async (req, res) => {
   const appointment = new Appointment(req.reserve);
 
@@ -84,7 +82,6 @@ exports.createReserve = async (req, res) => {
 };
 
 // List reserves ...
-
 exports.listReserves = (req, res) => {
   Appointment.find({ user: req.profile._id }, function (err, reserves) {
     Specialist.populate(
@@ -106,8 +103,7 @@ exports.listReserves = (req, res) => {
 };
 
 // Update reserve...
-
-exports.updateReserve = (req, res, next) => {
+exports.updateReserve = (req, res) => {
   const updates = Object.keys(req.body);
   const allowedUpdates = ["date", "hourIn", "hourOut"];
   const isValidOperation = updates.every((update) =>
@@ -139,7 +135,6 @@ exports.updateReserve = (req, res, next) => {
 };
 
 // Read reserve ...
-
 exports.readReserve = (req, res) => {
   Appointment.find({ _id: req.reserve._id }, function (err, reserve) {
     if (err || !reserve) {
@@ -147,33 +142,65 @@ exports.readReserve = (req, res) => {
         error: err,
       });
     }
-    Specialist.populate(
-      reserve,
-      {
-        path: "specialist",
-        select: "speciality specialization firstName lastName",
-      },
-      function (err, reserve) {
-        if (err) {
-          res.status(400).json({
-            error: err,
+    // If is user ...
+    if (req.profile.role === 0) {
+      Specialist.populate(
+        reserve,
+        {
+          path: "specialist",
+          select: "speciality specialization firstName lastName",
+        },
+        function (err, reserve) {
+          if (err) {
+            return res.status(400).json({
+              error: err,
+            });
+          }
+          const patient = {
+            _id: req.profile._id,
+            firstName: req.profile.firstName,
+            lastName: req.profile.lastName,
+            rut: req.profile.rut,
+          };
+          return res.status(200).json({
+            reserve,
+            patient,
           });
         }
-        const patient = {
-          _id: req.profile._id,
-          firstName: req.profile.firstName,
-          lastName: req.profile.lastName,
-          rut: req.profile.rut,
-        };
-        res.status(200).json({
-          reserve,
-          patient,
-        });
-      }
-    );
+      );
+    } else {
+      // If is specialist ...
+      User.populate(
+        reserve,
+        {
+          path: "user",
+          select: "firstName lastName rut",
+        },
+        function (err, reserve) {
+          if (err) {
+            return res.status(400).json({
+              error: err,
+            });
+          }
+
+          const specialist = {
+            _id: req.profile._id,
+            firstName: req.profile.firstName,
+            lastName: req.profile.lastName,
+            speciality: req.profile.speciality,
+            specialization: req.profile.specialization,
+          };
+          res.status(200).json({
+            reserve,
+            specialist,
+          });
+        }
+      );
+    }
   });
 };
 
+// Delete reserve ...
 exports.deleteReserve = (req, res) => {
   Appointment.findByIdAndDelete({ _id: req.reserve._id }).exec(
     (err, reserve) => {
