@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { Schema, model, ObjectId } = mongoose;
+const { Schema, model } = mongoose;
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
@@ -30,6 +30,7 @@ const userSchema = new Schema(
       type: String,
       trim: true,
       minlength: 7,
+      required: true,
     },
     salt: String,
     role: {

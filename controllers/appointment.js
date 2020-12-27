@@ -50,7 +50,7 @@ exports.isValidReserve = async (req, res, next) => {
 
     if (!canReserve) {
       return res.status(409).json({
-        conflict: "The time selected is reserved, try other time",
+        conflict: "The date and hour selected is reserved, try others hour",
       });
     }
     req.reserve = reserveData;
