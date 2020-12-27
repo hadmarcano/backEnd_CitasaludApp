@@ -17,6 +17,7 @@ const {
   getProfile,
   updateProfile,
   listReserves,
+  listAllSpecialist,
 } = require("../controllers/specialist");
 
 // Routes ...
@@ -182,8 +183,6 @@ router.get(
  *      - in: body
  *        name: Reserve info
  *        description: Reserve info to update
- *        schema:
- *          $ref: '#/definitions/postReserve'
  *    responses:
  *      "200":
  *         description: An object with the reserve updated!
@@ -262,6 +261,22 @@ router.delete(
   isAdmin,
   deleteReserve
 );
+
+/**
+ * @swagger
+ * /api/allspecialist:
+ *  get:
+ *      summary: List all specialist resgistered
+ *      description: Use to request show all the specialist resgistered
+ *      responses:
+ *          "200":
+ *              description: An array with the specialist registered
+ *          "204":
+ *              description: not found specialist registered
+ *          "500":
+ *              description: error message
+ */
+router.get("/allspecialist", listAllSpecialist);
 
 // Params
 

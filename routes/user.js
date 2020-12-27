@@ -32,7 +32,8 @@ const { userById, update, read } = require("../controllers/user");
  *          email:
  *              type: string
  *          birthDate:
- *              type: date
+ *              type: string
+ *              format: date
  *          rut:
  *              type: integer
  *          ocupation:

@@ -143,7 +143,7 @@ exports.readReserve = (req, res) => {
       });
     }
     // If is user ...
-    if (req.profile.role === 0) {
+    if (req.profile) {
       Specialist.populate(
         reserve,
         {
@@ -184,11 +184,11 @@ exports.readReserve = (req, res) => {
           }
 
           const specialist = {
-            _id: req.profile._id,
-            firstName: req.profile.firstName,
-            lastName: req.profile.lastName,
-            speciality: req.profile.speciality,
-            specialization: req.profile.specialization,
+            _id: req.specialist._id,
+            firstName: req.specialist.firstName,
+            lastName: req.specialist.lastName,
+            speciality: req.specialist.speciality,
+            specialization: req.specialist.specialization,
           };
           res.status(200).json({
             reserve,

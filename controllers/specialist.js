@@ -12,14 +12,14 @@ exports.specialistById = (req, res, next, id) => {
         error: "Specialist not found",
       });
     }
-    req.profile = spec;
+    req.specialist = spec;
     next();
   });
 };
 
 // Get specialist profile ...
 exports.getProfile = (req, res) => {
-  Specialist.findById({ _id: req.profile._id }).exec((err, specialist) => {
+  Specialist.findById({ _id: req.specialist._id }).exec((err, specialist) => {
     if (err || !specialist) {
       res.status(400).json({
         error: err,
@@ -32,6 +32,7 @@ exports.getProfile = (req, res) => {
 // Update specialist profile ...
 exports.updateProfile = (req, res) => {
   const updates = Object.keys(req.body);
+  console.log(updates);
   const allowedUpdates = [
     "firstName",
     "lastName",
@@ -55,7 +56,7 @@ exports.updateProfile = (req, res) => {
   }
 
   Specialist.findByIdAndUpdate(
-    { _id: req.profile._id },
+    { _id: req.specialist._id },
     { $set: req.body },
     { new: true },
     (err, specialist) => {
@@ -77,30 +78,52 @@ exports.updateProfile = (req, res) => {
 
 // List reserves by specialistId
 exports.listReserves = (req, res) => {
-  Appointment.find({ specialist: req.profile._id }, function (err, reserves) {
-    if (err || !reserves) {
-      res.status(400).json({
+  Appointment.find(
+    { specialist: req.specialist._id },
+    function (err, reserves) {
+      if (err || !reserves) {
+        res.status(400).json({
+          error: err,
+        });
+      }
+      User.populate(
+        reserves,
+        { path: "user", select: "firstName lastName rut" },
+        function (err, reserves) {
+          if (err || !reserves) {
+            return res.status(400).json({
+              error: err,
+            });
+          }
+
+          if (reserves.length === 0) {
+            return res.status(200).json({
+              reserves,
+              message: "You don't have reserves",
+            });
+          }
+          res.status(200).json(reserves);
+        }
+      );
+    }
+  );
+};
+
+// List All specialist ...
+
+exports.listAllSpecialist = (req, res) => {
+  Specialist.find().exec((err, specialists) => {
+    if ((err, !specialists)) {
+      return res.status(500).json({
         error: err,
       });
     }
-    User.populate(
-      reserves,
-      { path: "user", select: "firstName lastName rut" },
-      function (err, reserves) {
-        if (err || !reserves) {
-          return res.status(400).json({
-            error: err,
-          });
-        }
+    if (specialists.length == 0) {
+      return res.status(204).json({
+        message: "not found specialist registered",
+      });
+    }
 
-        if (reserves.length === 0) {
-          return res.status(200).json({
-            reserves,
-            message: "You don't have reserves",
-          });
-        }
-        res.status(200).json(reserves);
-      }
-    );
+    return res.status(200).json(specialists);
   });
 };

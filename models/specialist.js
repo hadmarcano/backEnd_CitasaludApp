@@ -31,7 +31,7 @@ const specialistSchema = new Schema(
     },
     salt: String,
     phone: Number,
-    Address: String,
+    address: String,
   },
   { timestamps: true }
 );

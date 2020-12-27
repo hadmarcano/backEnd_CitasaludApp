@@ -59,10 +59,10 @@ const {
  *        name: specialistId
  *        description: ID of specialist
  *      - in: body
- *        name: Reserve info
- *        description: Info to creat a reserve
+ *        name: Reserve Info
+ *        description: Info to create a reserve
  *        schema:
- *          $ref: '#/definitions/postReserve'
+ *            $ref: '#definitions/postReserve'
  *    responses:
  *      "200":
  *         description: An object with the reserve created
