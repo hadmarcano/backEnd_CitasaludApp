@@ -38,7 +38,8 @@ const { signupValidator } = require("../validator/index");
  *          email:
  *              type: string
  *          birthDate:
- *              type: date
+ *              type: string
+ *              format: date
  *          rut:
  *              type: integer
  *          ocupation:

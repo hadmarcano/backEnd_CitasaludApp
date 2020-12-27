@@ -79,17 +79,36 @@ exports.requireSignin = expressJwt({
 });
 
 exports.isAuth = (req, res, next) => {
-  let user = req.profile && req.auth && req.profile._id == req.auth._id;
-  if (!user) {
-    return res.status(403).json({
-      error: "Access denied",
-    });
+  if (req.profile && req.specialist) {
+    let user = req.profile && req.auth && req.profile._id == req.auth._id;
+    if (!user) {
+      return res.status(403).json({
+        error: "Access denied",
+      });
+    }
+    next();
+  } else if (req.specialist) {
+    let specialist =
+      req.specialist && req.auth && req.specialist._id == req.auth._id;
+    if (!specialist) {
+      return res.status(403).json({
+        error: "Access denied",
+      });
+    }
+    next();
+  } else {
+    let user = req.profile && req.auth && req.profile._id == req.auth._id;
+    if (!user) {
+      return res.status(403).json({
+        error: "Access denied",
+      });
+    }
+    next();
   }
-  next();
 };
 
 exports.isAdmin = (req, res, next) => {
-  if (req.profile.role === 0) {
+  if (req.specialist.role === 0) {
     return res.status(403).json({
       error: "admin resource! Access denied",
     });
