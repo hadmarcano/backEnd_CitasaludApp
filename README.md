@@ -12,7 +12,7 @@ Este Rest Server se realizó utilizando nodejs, expressjs y MongoDB.
 
 Backend de aplicación que será usada basicamente para almacenar y manejar información de reserva de citas, no consta de funcionalidades complejas, creación y manejo de usuarios y specialistas, definición de seguridad, autenticación de usuarios y especialistas(administradores) con JWT.
 
-1. Con esta API se pueden registrar usuarios y especialistas, ademas de poder administrar sus perfiles, los usuarios pueden realizar reservas de citas de consultas medicas con los especialistas, actualizar y eliminar las reservas, asi como tambien podrán acceder a todas las reservas realizadas, de igual manera los specialistas podran acceder a todas las citas que hayan reservado con el, este tambien tendra acceso de actualizar y eliminar estas citas.
+1. Con esta API se pueden registrar usuarios y especialistas, ademas de poder administrar sus perfiles, los usuarios pueden realizar reservas de citas de consultas medicas con los especialistas, actualizar y eliminar las reservas, asi como tambien podrán acceder a todas las reservas realizadas, de igual manera los specialistas podran acceder a todas las citas que hayan reservado con el, este tambien tendra acceso para actualizar y eliminar estas citas.
    Esta API esta diseñada para reservar citas en bloques de 30min,
    ejemplo hourIn : 08:30 / hourOut : 09:00.
 
